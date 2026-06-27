@@ -1,90 +1,107 @@
 def get_expense(prompt):
-    return float(input(prompt))
+    while True:
+        try:
+            amount = float(input(prompt))
+            if amount >= 0:
+                return amount
+            print("Please enter a value of 0 or greater.")
+        except ValueError:
+            print("Please enter a valid number.")
 
-print("Let's See How Much You Spend!")
+def main():
+    name, income = get_user_info()
+    
+    expenses = collect_expenses()
+    savings = collect_savings()
+    
+    totals = calculate_totals(income, expenses, savings)
+    
+    print_summary(name, expenses, savings, totals)
 
-name = input("What is your name? ")
-print(f"Nice to meet you, {name}!")
+def get_user_info():
+    print("Let's See How Much You Spend!")
+    print()
+    
+    name = input("What is your name? ")
+    print(f"Nice to meet you, {name}!")
+    print()
+    
+    income = get_expense("What is your monthly income? $")
 
-income = float(input("What is your monthly income? $"))
+    if income <= 0:
+        print("Income must be greater than zero.")
+        exit()
 
-if income <= 0:
-    print("Income must be greater than zero.")
-    exit()
+    print(f"You make ${income:,.2f} per month. Let's calculate your bills to see what remains!")
+    print()
 
-print(f"You make ${income:,.2f} per month. Let's calculate your bills to see what remains!")
+    return name, income
 
-rent = get_expense("How much do you pay for rent monthly? $")
-utilities = get_expense("How much do you pay for utilities monthly? $")
-food = get_expense("How much do you budget for food each month? $")
-gas = get_expense("How much do you spend on gas each month? $")
+def collect_expenses():
+    return {
+        "Fixed Costs": {
+            "Rent": get_expense("How much do you pay for rent monthly? $"),
+            "Utilities": get_expense("How much do you pay for utilities monthly? $"),
+            "Insurance": get_expense("How much do you pay for insurance? $"),
+        },
+        
+        "Variable Costs": {
+            "Food": get_expense("How much do you budget for food each month? $"),
+            "Gas": get_expense("How much do you spend on gas each month? $"),
+            "Subscriptions": get_expense("How much do you pay for subscriptions? $"),
+            "Debt": get_expense("Any additional debt that you would like to include? $"),
+        }
+    }
 
-subscriptions = get_expense("How much do you pay for subscriptions? $")
-debt = get_expense("Any additional debt that you would like to include? $")
-insurance = get_expense("How much do you pay for insurance? $")
+def collect_savings():
+    return {
+        "Emergency Fund": get_expense("How much do you want to save for a rainy day? $"),
+        "Vacation": get_expense("How much do you want to save for the next vacation? $"),
+        "Investments": get_expense("How much money do you want to invest? $"),
+    }
 
-savings = get_expense("How much would like you like to save each month? $")
+def calculate_totals(income, expenses, savings):
+    total_expenses = sum(sum(section.values()) for section in expenses.values())   
+    total_savings = sum(savings.values())
+    
+    remaining_after_expenses = income - total_expenses
+    final_remaining = remaining_after_expenses - total_savings
 
-expenses = [
-    rent,
-    utilities,
-    food,
-    gas,
-    subscriptions,
-    debt,
-    insurance,
-]
+    return {
+        "total_expenses": total_expenses,
+        "total_savings": total_savings,
+        "final_remaining": final_remaining,
+        "expense_ratio": total_expenses / income,
+        "savings_ratio": total_savings / income,
+    }
 
-total_expenses = sum(expenses)
+def print_summary(name, expenses, savings, totals):
+    print(f"\n{name}'s Monthly Budget Summary\n")
 
-remaining_after_expenses = income - total_expenses
-final_remaining = remaining_after_expenses - savings
+    for section, items in expenses.items():
+        print(section)
+        for category, amount in items.items():
+            print(f"{category:<20} ${amount:>10,.2f}")
 
-expense_ratio = total_expenses / income
-savings_ratio = savings / income
+    print("\nSavings")
+    for goal, amount in savings.items():
+        print(f"{goal:<25} ${amount:,.2f}")
 
-print("")
-print("\n=======================")
-print(f"{name}'s Monthly Budget Summary")
-print("=======================\n")
+    print("\nTotals")
+    print(f"Total Bills:              ${totals['total_expenses']:,.2f}")
+    print(f"Planned Savings:          ${totals['total_savings']:,.2f}")
+    print(f"Remaining After Savings:  ${totals['final_remaining']:,.2f}")
+    print(f"Income Used:               {totals['expense_ratio']:.1%}")
+    print(f"Savings Goal:              {totals['savings_ratio']:.1%}")
 
-print(f"Income:                   ${income:,.2f}")
-print("\n=======================")
-print("Fixed Costs")
-print("=======================\n")
-print(f"Rent:                     ${rent:,.2f}")
-print(f"Utilities:                ${utilities:,.2f}")
-print(f"Food:                     ${food:,.2f}")
-print(f"Gas:                      ${gas:,.2f}")
-print(f"Insurance:                ${insurance:,.2f}")
-
-print("\n=======================")
-print("Variable Costs")
-print("=======================\n")
-print(f"Subscriptions:            ${subscriptions:,.2f}")
-print(f"Debt:                     ${debt:,.2f}")
-
-
-print("\n=======================")
-print("Totals")
-print("=======================\n")
-
-print(f"Total Bills:              ${total_expenses:,.2f}")
-print("")
-print(f"Planned Savings:          ${savings:,.2f}")
-print("")
-print(f"Remaining After Savings:  ${final_remaining:,.2f}")
-print("")
-print(f"Income Used:               {expense_ratio:.1%}")
-print("")
-print(f"Savings Goal:              {savings_ratio:.1%}")
-print("")
-
-if expense_ratio < 0.5:
-    print(f"Excellent work, {name}! You're using less than half than half of your income on expenses.")
-elif expense_ratio <= 0.7:
-    print(f"Good job, {name}. You're spending is under control, but there may be opportunities to save more.")
-elif expense_ratio <= .9:
-    print(f"Careful, {name}. A large portion of your income is going toward monthly expenses.")
-else: 
-    print(f"Warning {name}. Your expenses are consuming nearly all of your income. Consider reviewing your budget.")
+    if totals["expense_ratio"] < 0.5:
+        print(f"Excellent work, {name}! You're using less than half than half of your income on expenses.")
+    elif totals["expense_ratio"] <= 0.7:
+        print(f"Good job, {name}. You're spending is under control, but there may be opportunities to save more.")
+    elif totals["expense_ratio"] <= .9:
+        print(f"Careful, {name}. A large portion of your income is going toward monthly expenses.")
+    else: 
+        print(f"Warning {name}. Your expenses are consuming nearly all of your income. Consider reviewing your budget.")
+        
+if __name__ == "__main__":
+    main()
