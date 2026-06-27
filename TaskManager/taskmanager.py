@@ -17,6 +17,26 @@ def add_task():
     else:
         print("\nError: Task Name Cannot Be Blank!\n")
     
+    
+def complete_task():
+    if not tasks:
+        print("\nThere are no tasks to complete.")
+        return
+    
+    view_tasks()
+    
+    try:
+        task_number = int(input("Enter the task number to complete: "))
+    except ValueError:
+        print("Please enter a valid task number")
+    
+    if 1 <= task_number <= len(tasks):
+        task_number = tasks.pop(task_number - 1)
+        print(f"\nSuccess: '{task_number}' has been completed and removed from your task manager!\n")
+    else:
+        print("\nError: Please select a valid task number.\n")
+        return
+    
 def delete_task():
     if not tasks:
         print("\nThere are no tasks to delete.")
@@ -24,7 +44,10 @@ def delete_task():
     
     view_tasks()
     
-    task_number = int(input("Delete Which Task? ").strip())
+    try:
+        task_number = int(input("Enter the task number to complete: "))
+    except ValueError:
+        print("Please enter a valid task number")
     
     if 1 <= task_number <= len(tasks):
         task_number = tasks.pop(task_number - 1)
@@ -33,13 +56,6 @@ def delete_task():
         print("\nError: Please select a valid task number.\n")
         return
  
-    
-
-
-    
-    
-def complete_task():
-    view_tasks()
 
 def main():
     while True:
