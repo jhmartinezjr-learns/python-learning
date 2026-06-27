@@ -1,4 +1,23 @@
-tasks = ["Build GUI Prototype", "Review Budget Metrics"]
+import json
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FILE_PATH = os.path.join(BASE_DIR, "tasks.json")
+
+
+def load_tasks():
+    try:
+        with open(FILE_PATH, "r") as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+    
+    
+
+def save_tasks(tasks):
+    with open(FILE_PATH, "w") as file:
+        json.dump(tasks, file, indent=2)
+       
 
 def view_tasks():
     print("\n--- Current Active Tasks ---")
@@ -9,13 +28,16 @@ def view_tasks():
             print(f"{index}. {task}")
     print("----------------------------\n")
     
+tasks = load_tasks()
+    
 def add_task():
     new_task = input("Enter a New Task: ").strip()
     if new_task:
         tasks.append(new_task)
+        save_tasks(tasks)
         print(f"\nSuccess: '{new_task}' has been added to your task manager!\n")
     else:
-        print("\nError: Task Name Cannot Be Blank!\n")
+        print("\nError: Task Name Cannot Be Blank!\n")   
     
     
 def complete_task():
@@ -33,10 +55,12 @@ def complete_task():
     
     if 1 <= completed_task <= len(tasks):
         completed_task = tasks.pop(completed_task - 1)
+        save_tasks(tasks)
         print(f"\nSuccess: '{completed_task}' has been completed and removed from your task manager!\n")
     else:
         print("\nError: Please select a valid task number.\n")
-        return
+
+    
     
 def delete_task():
     if not tasks:
@@ -53,13 +77,16 @@ def delete_task():
     
     if 1 <= deleted_task <= len(tasks):
         deleted_task = tasks.pop(deleted_task - 1)
+        save_tasks(tasks)
         print(f"\nSuccess: '{deleted_task}' has been removed from your task manager!\n")
     else:
         print("\nError: Please select a valid task number.\n")
-        return
- 
+
+
+
 
 def main():
+   
     while True:
         print("==== TASK MANAGER ====")
         print("1. View Tasks")
