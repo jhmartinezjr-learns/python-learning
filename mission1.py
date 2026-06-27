@@ -25,47 +25,66 @@ insurance = get_expense("How much do you pay for insurance? $")
 
 savings = get_expense("How much would like you like to save each month? $")
 
-calculate_bills = rent + utilities + food + gas + subscriptions + debt + insurance + savings
-balance = income - calculate_bills
-percent = calculate_bills / income
+expenses = [
+    rent,
+    utilities,
+    food,
+    gas,
+    subscriptions,
+    debt,
+    insurance,
+]
+
+total_expenses = sum(expenses)
+
+remaining_after_expenses = income - total_expenses
+final_remaining = remaining_after_expenses - savings
+
+expense_ratio = total_expenses / income
+savings_ratio = savings / income
 
 print("")
 print("\n=======================")
 print(f"{name}'s Monthly Budget Summary")
 print("=======================\n")
 
-print(f"Income:          ${income:,.2f}")
+print(f"Income:                   ${income:,.2f}")
 print("\n=======================")
-print("Necessary Spends")
+print("Fixed Costs")
 print("=======================\n")
-print(f"Rent:           ${rent:,.2f}")
-print(f"Utilities:      ${utilities:,.2f}")
-print(f"Food:           ${food:,.2f}")
-print(f"Gas:            ${gas:,.2f}")
-print(f"Insurance:      ${insurance:,.2f}")
-
-print("\n=======================")
-print("Lifestyle Spends")
-print("=======================\n")
-print(f"Subscriptions:  ${subscriptions:,.2f}")
-print(f"Debt:           ${debt:,.2f}")
+print(f"Rent:                     ${rent:,.2f}")
+print(f"Utilities:                ${utilities:,.2f}")
+print(f"Food:                     ${food:,.2f}")
+print(f"Gas:                      ${gas:,.2f}")
+print(f"Insurance:                ${insurance:,.2f}")
 
 print("\n=======================")
-print("Savings")
+print("Variable Costs")
 print("=======================\n")
-print(f"savings:        ${savings:,.2f}")
+print(f"Subscriptions:            ${subscriptions:,.2f}")
+print(f"Debt:                     ${debt:,.2f}")
 
-print("\n=======================\n")
 
-print(f"Total Bills:    ${calculate_bills:,.2f}")
+print("\n=======================")
+print("Totals")
+print("=======================\n")
+
+print(f"Total Bills:              ${total_expenses:,.2f}")
 print("")
-print(f"Remaining:      ${balance:,.2f}")
+print(f"Planned Savings:          ${savings:,.2f}")
 print("")
-print(f"Income Used:     {percent:.1%}")
+print(f"Remaining After Savings:  ${final_remaining:,.2f}")
 print("")
-if percent < 0.5:
-    print(f"Excellent {name}! You're saving a healthy portion of your income!")
-elif percent <= 0.7:
-    print(f"Not Bad {name}! Keep an eye on discretionary spending!")
+print(f"Income Used:               {expense_ratio:.1%}")
+print("")
+print(f"Savings Goal:              {savings_ratio:.1%}")
+print("")
+
+if expense_ratio < 0.5:
+    print(f"Excellent work, {name}! You're using less than half than half of your income on expenses.")
+elif expense_ratio <= 0.7:
+    print(f"Good job, {name}. You're spending is under control, but there may be opportunities to save more.")
+elif expense_ratio <= .9:
+    print(f"Careful, {name}. A large portion of your income is going toward monthly expenses.")
 else: 
-    print(f"YOU SPEND SOME MONEEYYY {name}!! Your Expenses are Consuming your Income!")
+    print(f"Warning {name}. Your expenses are consuming nearly all of your income. Consider reviewing your budget.")
