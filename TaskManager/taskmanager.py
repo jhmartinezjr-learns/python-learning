@@ -10,15 +10,33 @@ def view_tasks():
     print("----------------------------\n")
     
 def add_task():
-    new_task = input("Enter a New Task: ")
+    new_task = input("Enter a New Task: ").strip()
     if new_task:
         tasks.append(new_task)
-        print(f"Success: '{new_task}' has been added to your task manager!\n")
+        print(f"\nSuccess: '{new_task}' has been added to your task manager!\n")
     else:
         print("\nError: Task Name Cannot Be Blank!\n")
     
 def delete_task():
+    if not tasks:
+        print("\nThere are no tasks to delete.")
+        return
+    
     view_tasks()
+    
+    task_number = int(input("Delete Which Task? ").strip())
+    
+    if 1 <= task_number <= len(tasks):
+        task_number = tasks.pop(task_number - 1)
+        print(f"\nSuccess: '{task_number}' has been removed from your task manager!\n")
+    else:
+        print("\nError: Please select a valid task number.\n")
+        return
+ 
+    
+
+
+    
     
 def complete_task():
     view_tasks()
