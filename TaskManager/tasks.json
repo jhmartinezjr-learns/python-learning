@@ -1,1 +1,27 @@
-["Rememver me"]
+[
+  {
+    "id": 1,
+    "task": "New JSON File",
+    "status": "done"
+  },
+  {
+    "id": 2,
+    "task": "Coffee in the Mornin",
+    "status": "done"
+  },
+  {
+    "id": 3,
+    "task": "I think we got it!",
+    "status": "done"
+  },
+  {
+    "id": 4,
+    "task": "We GOT IT!",
+    "status": "deleted"
+  },
+  {
+    "id": 5,
+    "task": "Delete this!",
+    "status": "deleted"
+  }
+]

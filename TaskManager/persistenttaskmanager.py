@@ -24,27 +24,16 @@ def save_tasks(tasks):
         json.dump(tasks, file, indent=2)
        
 
-def view_tasks():
-    print("\n--- Current Active Tasks ---")
+#---------------------------------------
+# BUSINESS LOGIC
+#---------------------------------------
     
-    if not tasks:
-        print("No Tasks Found")
-        return
-    
-    for task in tasks:
-        status = "✓" if task["status"] == "done" else "•"
-        print(f"{task['id']}. [{status}] {task['taks']}")
-    
-    print("---------------------\n")
-    
-tasks = load_tasks()
-    
-def add_task():
+def add_task(tasks):
     task_text = input("Enter a New Task: ").strip()
     
     if not task_text:
         print("Task Cannot Be Blank")
-        return
+        return tasks
     
     new_task = {
         "id": get_next_id(tasks),
@@ -56,24 +45,26 @@ def add_task():
     save_tasks(tasks)
     
     print(f"Added: {task_text}")
+    return tasks
     
 def complete_task(tasks):
-    view_tasks()
+    view_tasks(tasks)
     
     try:
         task_id = int(input("Enter Task ID to Complete: "))
     except ValueError:
         print("Invalid Input.")
-        return
+        return tasks
     
     for task in tasks:
         if task["id"] == task_id:
             task["status"] = "done"
             save_tasks(tasks)
             print(f"Completed: {task['task']}")
-            return
+            return tasks
 
     print("Task Not Found.")
+    return tasks
     
     
 def delete_task(tasks):
@@ -85,17 +76,40 @@ def delete_task(tasks):
         print("Invalid Input")
         return tasks
     
-    tasks = [task for task in tasks if task["id"] != task_id]
-    
-    save_tasks(tasks)
-    print("Task Deleted")
-        
-        
+    for task in tasks:
+        if task["id"] == task_id:
+            task["status"] = "deleted"
+            save_tasks(tasks)
+            print(f"\nDeleted: {task['task']}\n")
+            return tasks
+      
+    return tasks    
 
 def get_next_id(tasks):
     if not tasks:
         return 1
     return max(task["id"] for task in tasks) + 1
+
+
+#----------------------------------
+# UI
+#----------------------------------
+
+
+def view_tasks(tasks):
+    print("\n--- Current Active Tasks ---")
+
+    active_tasks = [task for task in tasks if task["status"] != "deleted"]
+
+    if not active_tasks:
+        print("No Active Tasks Found")
+        return
+
+    for task in active_tasks:
+        status = "✓" if task["status"] == "done" else "•"
+        print(f"{task['id']}. [{status}] {task['task']}")
+
+    print("---------------------\n")
 
 
 def main():
