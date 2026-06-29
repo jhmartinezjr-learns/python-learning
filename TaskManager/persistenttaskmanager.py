@@ -5,6 +5,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FILE_PATH = os.path.join(BASE_DIR, "tasks.json")
 
 
+#-----------------------------
+# DATA LAYER
+#-----------------------------
+
+
 def load_tasks():
     try:
         with open(FILE_PATH, "r") as file:
@@ -21,71 +26,80 @@ def save_tasks(tasks):
 
 def view_tasks():
     print("\n--- Current Active Tasks ---")
+    
     if not tasks:
-        print("Your task list is empty!")
-    else:
-        for index, task in enumerate(tasks, start=1):
-            print(f"{index}. {task}")
-    print("----------------------------\n")
+        print("No Tasks Found")
+        return
+    
+    for task in tasks:
+        status = "✓" if task["status"] == "done" else "•"
+        print(f"{task['id']}. [{status}] {task['taks']}")
+    
+    print("---------------------\n")
     
 tasks = load_tasks()
     
 def add_task():
-    new_task = input("Enter a New Task: ").strip()
-    if new_task:
-        tasks.append(new_task)
-        save_tasks(tasks)
-        print(f"\nSuccess: '{new_task}' has been added to your task manager!\n")
-    else:
-        print("\nError: Task Name Cannot Be Blank!\n")   
+    task_text = input("Enter a New Task: ").strip()
     
-    
-def complete_task():
-    if not tasks:
-        print("\nThere are no tasks to complete.")
+    if not task_text:
+        print("Task Cannot Be Blank")
         return
     
+    new_task = {
+        "id": get_next_id(tasks),
+        "task": task_text,
+        "status": "pending"
+    }   
+    
+    tasks.append(new_task)
+    save_tasks(tasks)
+    
+    print(f"Added: {task_text}")
+    
+def complete_task(tasks):
     view_tasks()
     
     try:
-        completed_task = int(input("Enter the task number to complete: "))
+        task_id = int(input("Enter Task ID to Complete: "))
     except ValueError:
-        print("Please enter a valid task number")
+        print("Invalid Input.")
         return
     
-    if 1 <= completed_task <= len(tasks):
-        completed_task = tasks.pop(completed_task - 1)
-        save_tasks(tasks)
-        print(f"\nSuccess: '{completed_task}' has been completed and removed from your task manager!\n")
-    else:
-        print("\nError: Please select a valid task number.\n")
+    for task in tasks:
+        if task["id"] == task_id:
+            task["status"] = "done"
+            save_tasks(tasks)
+            print(f"Completed: {task['task']}")
+            return
 
+    print("Task Not Found.")
     
     
-def delete_task():
-    if not tasks:
-        print("\nThere are no tasks to delete.")
-        return
-    
-    view_tasks()
+def delete_task(tasks):
+    view_tasks(tasks)
     
     try:
-        deleted_task = int(input("Enter the task number to delete: "))
+        task_id = int(input("Enter Task ID to Delete: "))
     except ValueError:
-        print("Please enter a valid task number")
-        return
+        print("Invalid Input")
+        return tasks
     
-    if 1 <= deleted_task <= len(tasks):
-        deleted_task = tasks.pop(deleted_task - 1)
-        save_tasks(tasks)
-        print(f"\nSuccess: '{deleted_task}' has been removed from your task manager!\n")
-    else:
-        print("\nError: Please select a valid task number.\n")
+    tasks = [task for task in tasks if task["id"] != task_id]
+    
+    save_tasks(tasks)
+    print("Task Deleted")
+        
+        
 
-
+def get_next_id(tasks):
+    if not tasks:
+        return 1
+    return max(task["id"] for task in tasks) + 1
 
 
 def main():
+    tasks = load_tasks()
    
     while True:
         print("==== TASK MANAGER ====")
@@ -99,13 +113,13 @@ def main():
         choice = input("Select an option (1-5): ")
         
         if choice == "1":
-            view_tasks()
+            view_tasks(tasks)
         elif choice == "2":
-            add_task()
+            tasks = add_task(tasks)
         elif choice == "3":
-            complete_task()
+            tasks = complete_task(tasks)
         elif choice == "4":
-            delete_task()
+            tasks = delete_task(tasks)
         elif choice == "5":
             print("Goodbye!")
             break
