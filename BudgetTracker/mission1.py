@@ -95,7 +95,7 @@ def print_summary(name, expenses, savings, totals):
     print(f"Savings Goal:              {totals['savings_ratio']:.1%}")
 
     if totals["expense_ratio"] < 0.5:
-        print(f"Excellent work, {name}! You're using less than half than half of your income on expenses.")
+        print(f"Excellent work, {name}! You're using less than half of your income on expenses.")
     elif totals["expense_ratio"] <= 0.7:
         print(f"Good job, {name}. You're spending is under control, but there may be opportunities to save more.")
     elif totals["expense_ratio"] <= .9:
